@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     stages {
@@ -10,16 +9,26 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
-            steps {
-                sh 'npm ci'
-            }
-        }
-
         stage('Run Cypress tests') {
             steps {
-                sh 'npm run test:e2e'
+                sh '''
+                    docker run --rm qa-automation-saucedemo
+                '''
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finalizado'
+        }
+
+        success {
+            echo '✅ Todos los tests de Cypress pasaron correctamente'
+        }
+
+        failure {
+            echo '❌ Uno o más tests fallaron'
         }
     }
 }
